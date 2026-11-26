@@ -58,7 +58,9 @@ TAC is generated **only** when lexical, syntax, and semantic analysis all pass w
 
 ```text
 .
-├── docs/                                # Project report, formal CFG, and design docs
+├── docs/
+│   ├── Project_Report.md                # Full 14-chapter project report & formal CFG
+│   └── screenshots/                     # Verification screenshots (build, IDE, errors, TAC)
 ├── examples/
 │   ├── sample.mc                        # Lab manual Section 5.5 sample program
 │   ├── sample.out                       # Expected compiler output
@@ -173,6 +175,13 @@ make test
 ```bash
 make clean
 ```
+
+---
+
+## Documentation
+
+- **Full Project Report (with Formal CFG & Architecture):** [docs/Project_Report.md](docs/Project_Report.md)
+- **Verification Screenshots (Build, AST, Symbol Table, TAC & Error Handling):** [docs/screenshots/](docs/screenshots/)
 
 ---
 
