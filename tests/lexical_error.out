@@ -1,0 +1,9 @@
+Lexical Error at line 3: Invalid token '@'
+Syntax Error at line 3: syntax error, unexpected INT_LITERAL, expecting SEMICOLON
+Lexical Error at line 5: Invalid floating-point literal '3.14abc'
+Syntax Error at line 5: syntax error, unexpected SEMICOLON
+Lexical Error at line 6: Invalid identifier or numeric literal '123bad'
+Syntax Error at line 6: syntax error, unexpected SEMICOLON, expecting IDENTIFIER
+Lexical Error at line 8: Invalid token '$'
+
+Compilation failed for 'tests/lexical_error.mc': 4 lexical error(s), 3 syntax error(s). Semantic analysis and TAC generation skipped.

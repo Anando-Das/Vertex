@@ -1,0 +1,4 @@
+Semantic Error at line 8: Redeclaration of variable 'x' in the same scope (previously declared at line 6)
+Semantic Error at line 10: Redeclaration of variable 'x' in the same scope (previously declared at line 2)
+
+Semantic analysis failed for 'tests/semantic_errors/02_redeclaration.mc' with 2 error(s). TAC generation skipped.

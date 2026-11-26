@@ -1,0 +1,112 @@
+=== Abstract Syntax Tree (tests/valid_nested_and_ops.mc) ===
+Program (line 2)
+  VarDecl (type: int, name: x, line 2)
+  VarDecl (type: int, name: y, line 3)
+  VarDecl (type: bool, name: active, line 4)
+  Assign (target: x, line 6)
+    UnaryOp '-' [int] (line 6)
+      IntLiteral: 5 (line 6)
+  Assign (target: y, line 7)
+    IntLiteral: 10 (line 7)
+  Assign (target: active, line 8)
+    BinaryOp '&&' [bool] (line 8)
+      BinaryOp '&&' [bool] (line 8)
+        UnaryOp '!' [bool] (line 8)
+          BoolLiteral: false (line 8)
+        BinaryOp '||' [bool] (line 8)
+          BinaryOp '<' [bool] (line 8)
+            Identifier: x [int] (line 8)
+            Identifier: y [int] (line 8)
+          BinaryOp '>=' [bool] (line 8)
+            Identifier: y [int] (line 8)
+            IntLiteral: 10 (line 8)
+      BinaryOp '!=' [bool] (line 8)
+        Identifier: x [int] (line 8)
+        Identifier: y [int] (line 8)
+  If (line 10)
+    Condition:
+      Identifier: active [bool] (line 10)
+    Then:
+      IfElse (line 11)
+        Condition:
+          BinaryOp '<=' [bool] (line 11)
+            Identifier: x [int] (line 11)
+            IntLiteral: 0 (line 11)
+        Then:
+          Block (line 11)
+            VarDecl (type: int, name: inner, line 12)
+            Assign (target: inner, line 13)
+              BinaryOp '*' [int] (line 13)
+                Identifier: y [int] (line 13)
+                IntLiteral: 2 (line 13)
+            Print (line 14)
+              Identifier: inner [int] (line 14)
+        Else:
+          Block (line 15)
+            Print (line 16)
+              Identifier: y [int] (line 16)
+  Block (line 19)
+    VarDecl (type: int, name: scoped, line 20)
+    Assign (target: scoped, line 21)
+      IntLiteral: 1 (line 21)
+    While (line 22)
+      Condition:
+        BinaryOp '&&' [bool] (line 22)
+          BinaryOp '<' [bool] (line 22)
+            Identifier: scoped [int] (line 22)
+            IntLiteral: 4 (line 22)
+          Identifier: active [bool] (line 22)
+      Body:
+        Block (line 22)
+          Print (line 23)
+            Identifier: scoped [int] (line 23)
+          Assign (target: scoped, line 24)
+            BinaryOp '+' [int] (line 24)
+              Identifier: scoped [int] (line 24)
+              IntLiteral: 1 (line 24)
+
+=== Semantic Analysis ===
+Status: PASSED (0 semantic errors)
+
+=== Symbol Table ===
+Name             Type     Scope Level  Scope ID   Line Declared 
+----------------------------------------------------------------
+x                int      0            0          2             
+y                int      0            0          3             
+active           bool     0            0          4             
+inner            int      2            2          12            
+scoped           int      1            4          20            
+
+=== Three Address Code (TAC) ===
+  t1 = -5
+  x = t1
+  y = 10
+  t2 = !false
+  t3 = x < y
+  t4 = y >= 10
+  t5 = t3 || t4
+  t6 = t2 && t5
+  t7 = x != y
+  t8 = t6 && t7
+  active = t8
+  ifFalse active goto L1
+  t9 = x <= 0
+  ifFalse t9 goto L2
+  t10 = y * 2
+  inner = t10
+  print inner
+  goto L3
+L2:
+  print y
+L3:
+L1:
+  scoped = 1
+L4:
+  t11 = scoped < 4
+  t12 = t11 && active
+  ifFalse t12 goto L5
+  print scoped
+  t13 = scoped + 1
+  scoped = t13
+  goto L4
+L5:

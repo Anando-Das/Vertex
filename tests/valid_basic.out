@@ -1,0 +1,53 @@
+=== Abstract Syntax Tree (tests/valid_basic.mc) ===
+Program (line 2)
+  VarDecl (type: int, name: a, line 2)
+  VarDecl (type: float, name: pi, line 3)
+  VarDecl (type: bool, name: ok, line 4)
+  Assign (target: a, line 6)
+    IntLiteral: 42 (line 6)
+  Assign (target: pi, line 7)
+    FloatLiteral: 3.14 (line 7)
+  Assign (target: ok, line 8)
+    BoolLiteral: false (line 8)
+  Assign (target: a, line 11)
+    BinaryOp '-' [int] (line 11)
+      BinaryOp '+' [int] (line 11)
+        IntLiteral: 2 (line 11)
+        BinaryOp '*' [int] (line 11)
+          IntLiteral: 3 (line 11)
+          IntLiteral: 4 (line 11)
+      BinaryOp '%' [int] (line 11)
+        BinaryOp '/' [int] (line 11)
+          IntLiteral: 10 (line 11)
+          IntLiteral: 2 (line 11)
+        IntLiteral: 3 (line 11)
+  Print (line 12)
+    Identifier: a [int] (line 12)
+  Print (line 13)
+    Identifier: pi [float] (line 13)
+  Print (line 14)
+    Identifier: ok [bool] (line 14)
+
+=== Semantic Analysis ===
+Status: PASSED (0 semantic errors)
+
+=== Symbol Table ===
+Name             Type     Scope Level  Scope ID   Line Declared 
+----------------------------------------------------------------
+a                int      0            0          2             
+pi               float    0            0          3             
+ok               bool     0            0          4             
+
+=== Three Address Code (TAC) ===
+  a = 42
+  pi = 3.14
+  ok = false
+  t1 = 3 * 4
+  t2 = 2 + t1
+  t3 = 10 / 2
+  t4 = t3 % 3
+  t5 = t2 - t4
+  a = t5
+  print a
+  print pi
+  print ok

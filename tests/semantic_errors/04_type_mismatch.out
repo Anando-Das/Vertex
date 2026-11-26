@@ -1,0 +1,6 @@
+Semantic Error at line 2: Type mismatch - cannot initialize 'bool' variable 'b' with expression of type 'float'
+Semantic Error at line 7: Type mismatch - 'if' condition must be of type 'bool', got 'int'
+Semantic Error at line 11: Type mismatch - 'while' condition must be of type 'bool', got 'float'
+Semantic Error at line 16: Type mismatch - operator '==' cannot compare 'bool' with 'int'
+
+Semantic analysis failed for 'tests/semantic_errors/04_type_mismatch.mc' with 4 error(s). TAC generation skipped.

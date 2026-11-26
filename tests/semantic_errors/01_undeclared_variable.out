@@ -1,0 +1,4 @@
+Semantic Error at line 4: Undeclared variable 'b'
+Semantic Error at line 5: Undeclared variable 'c'
+
+Semantic analysis failed for 'tests/semantic_errors/01_undeclared_variable.mc' with 2 error(s). TAC generation skipped.

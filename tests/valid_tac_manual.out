@@ -1,0 +1,35 @@
+=== Abstract Syntax Tree (tests/valid_tac_manual.mc) ===
+Program (line 2)
+  VarDecl (type: int, name: a, line 2)
+  VarDecl (type: int, name: b, line 3)
+  VarDecl (type: int, name: c, line 4)
+  Assign (target: a, line 5)
+    IntLiteral: 5 (line 5)
+  Assign (target: b, line 6)
+    IntLiteral: 10 (line 6)
+  Assign (target: c, line 7)
+    BinaryOp '+' [int] (line 7)
+      Identifier: a [int] (line 7)
+      BinaryOp '*' [int] (line 7)
+        Identifier: b [int] (line 7)
+        IntLiteral: 2 (line 7)
+  Print (line 8)
+    Identifier: c [int] (line 8)
+
+=== Semantic Analysis ===
+Status: PASSED (0 semantic errors)
+
+=== Symbol Table ===
+Name             Type     Scope Level  Scope ID   Line Declared 
+----------------------------------------------------------------
+a                int      0            0          2             
+b                int      0            0          3             
+c                int      0            0          4             
+
+=== Three Address Code (TAC) ===
+  a = 5
+  b = 10
+  t1 = b * 2
+  t2 = a + t1
+  c = t2
+  print c

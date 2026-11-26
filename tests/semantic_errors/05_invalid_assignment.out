@@ -1,0 +1,7 @@
+Semantic Error at line 6: Invalid assignment - cannot assign expression of type 'bool' to variable 'count' of type 'int'
+Semantic Error at line 7: Invalid assignment - cannot assign expression of type 'float' to variable 'count' of type 'int'
+Semantic Error at line 8: Invalid assignment - cannot assign expression of type 'bool' to variable 'ratio' of type 'float'
+Semantic Error at line 9: Invalid assignment - cannot assign expression of type 'int' to variable 'ready' of type 'bool'
+Semantic Error at line 10: Invalid assignment - cannot assign expression of type 'float' to variable 'ready' of type 'bool'
+
+Semantic analysis failed for 'tests/semantic_errors/05_invalid_assignment.mc' with 5 error(s). TAC generation skipped.

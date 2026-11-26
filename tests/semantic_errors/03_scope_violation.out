@@ -1,0 +1,5 @@
+Semantic Error at line 10: Scope violation - variable 'block_var' (declared at line 6 in inner scope level 1) is not visible outside its block
+Semantic Error at line 17: Scope violation - variable 'if_var' (declared at line 13 in inner scope level 1) is not visible outside its block
+Semantic Error at line 24: Scope violation - variable 'while_var' (declared at line 20 in inner scope level 1) is not visible outside its block
+
+Semantic analysis failed for 'tests/semantic_errors/03_scope_violation.mc' with 3 error(s). TAC generation skipped.

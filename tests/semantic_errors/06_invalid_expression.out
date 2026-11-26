@@ -1,0 +1,10 @@
+Semantic Error at line 10: Invalid expression - logical operator '&&' requires 'bool' operands, got 'int' and 'bool'
+Semantic Error at line 11: Invalid expression - logical operator '||' requires 'bool' operands, got 'int' and 'float'
+Semantic Error at line 12: Invalid expression - logical '!' requires a 'bool' operand, got 'int'
+Semantic Error at line 15: Invalid expression - arithmetic operator '+' requires numeric (int/float) operands, got 'bool' and 'int'
+Semantic Error at line 16: Invalid expression - arithmetic operator '*' requires numeric (int/float) operands, got 'int' and 'bool'
+Semantic Error at line 17: Invalid expression - modulo operator '%' requires 'int' operands, got 'int' and 'float'
+Semantic Error at line 18: Invalid expression - unary '-' requires a numeric (int/float) operand, got 'bool'
+Semantic Error at line 21: Invalid expression - relational operator '<' requires numeric (int/float) operands, got 'bool' and 'int'
+
+Semantic analysis failed for 'tests/semantic_errors/06_invalid_expression.mc' with 8 error(s). TAC generation skipped.

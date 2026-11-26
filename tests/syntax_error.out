@@ -1,0 +1,5 @@
+Syntax Error at line 3: syntax error, unexpected SEMICOLON
+Syntax Error at line 6: syntax error, unexpected LBRACE, expecting RPAREN
+Syntax Error at line 8: syntax error, unexpected RBRACE
+
+Compilation failed for 'tests/syntax_error.mc': 0 lexical error(s), 3 syntax error(s). Semantic analysis and TAC generation skipped.
