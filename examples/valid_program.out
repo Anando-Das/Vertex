@@ -1,0 +1,138 @@
+=== Abstract Syntax Tree (examples/valid_program.mc) ===
+Program (line 9)
+  VarDecl (type: int, name: n, line 9)
+  VarDecl (type: int, name: i, line 10)
+  VarDecl (type: int, name: sum, line 11)
+  VarDecl (type: float, name: threshold, line 12)
+  VarDecl (type: float, name: total, line 13)
+  VarDecl (type: bool, name: passed, line 14)
+  VarDecl (type: bool, name: done, line 15)
+  Assign (target: n, line 17)
+    IntLiteral: 5 (line 17)
+  Assign (target: i, line 18)
+    IntLiteral: 1 (line 18)
+  Assign (target: sum, line 19)
+    IntLiteral: 0 (line 19)
+  Assign (target: threshold, line 20)
+    FloatLiteral: 12.5 (line 20)
+  Assign (target: done, line 21)
+    BoolLiteral: false (line 21)
+  While (line 23)
+    Condition:
+      BinaryOp '&&' [bool] (line 23)
+        BinaryOp '<=' [bool] (line 23)
+          Identifier: i [int] (line 23)
+          Identifier: n [int] (line 23)
+        UnaryOp '!' [bool] (line 23)
+          Identifier: done [bool] (line 23)
+    Body:
+      Block (line 23)
+        Assign (target: sum, line 24)
+          BinaryOp '+' [int] (line 24)
+            Identifier: sum [int] (line 24)
+            BinaryOp '*' [int] (line 24)
+              Identifier: i [int] (line 24)
+              IntLiteral: 2 (line 24)
+        Assign (target: i, line 25)
+          BinaryOp '+' [int] (line 25)
+            Identifier: i [int] (line 25)
+            IntLiteral: 1 (line 25)
+  Assign (target: total, line 28)
+    BinaryOp '+' [float] (line 28)
+      Identifier: sum [int] (line 28)
+      FloatLiteral: 0.5 (line 28)
+  Assign (target: passed, line 29)
+    BinaryOp '&&' [bool] (line 29)
+      BinaryOp '>=' [bool] (line 29)
+        Identifier: total [float] (line 29)
+        Identifier: threshold [float] (line 29)
+      BinaryOp '==' [bool] (line 29)
+        BinaryOp '%' [int] (line 29)
+          Identifier: sum [int] (line 29)
+          IntLiteral: 2 (line 29)
+        IntLiteral: 0 (line 29)
+  IfElse (line 31)
+    Condition:
+      BinaryOp '==' [bool] (line 31)
+        Identifier: passed [bool] (line 31)
+        BoolLiteral: true (line 31)
+    Then:
+      Block (line 31)
+        VarDecl (type: int, name: bonus, line 32)
+        Assign (target: bonus, line 33)
+          UnaryOp '-' [int] (line 33)
+            IntLiteral: 10 (line 33)
+        Block (line 34)
+          VarDecl (type: float, name: adjusted, line 35)
+          Assign (target: adjusted, line 36)
+            BinaryOp '-' [float] (line 36)
+              Identifier: total [float] (line 36)
+              Identifier: bonus [int] (line 36)
+          Print (line 37)
+            Identifier: adjusted [float] (line 37)
+        Print (line 39)
+          Identifier: sum [int] (line 39)
+    Else:
+      Block (line 40)
+        Print (line 41)
+          Identifier: threshold [float] (line 41)
+  Assign (target: done, line 44)
+    BoolLiteral: true (line 44)
+  Print (line 45)
+    Identifier: passed [bool] (line 45)
+
+=== Semantic Analysis ===
+Status: PASSED (0 semantic errors)
+
+=== Symbol Table ===
+Name             Type     Scope Level  Scope ID   Line Declared 
+----------------------------------------------------------------
+n                int      0            0          9             
+i                int      0            0          10            
+sum              int      0            0          11            
+threshold        float    0            0          12            
+total            float    0            0          13            
+passed           bool     0            0          14            
+done             bool     0            0          15            
+bonus            int      1            2          32            
+adjusted         float    2            3          35            
+
+=== Three Address Code (TAC) ===
+  n = 5
+  i = 1
+  sum = 0
+  threshold = 12.5
+  done = false
+L1:
+  t1 = i <= n
+  t2 = !done
+  t3 = t1 && t2
+  ifFalse t3 goto L2
+  t4 = i * 2
+  t5 = sum + t4
+  sum = t5
+  t6 = i + 1
+  i = t6
+  goto L1
+L2:
+  t7 = sum + 0.5
+  total = t7
+  t8 = total >= threshold
+  t9 = sum % 2
+  t10 = t9 == 0
+  t11 = t8 && t10
+  passed = t11
+  t12 = passed == true
+  ifFalse t12 goto L3
+  t13 = -10
+  bonus = t13
+  t14 = total - bonus
+  adjusted = t14
+  print adjusted
+  print sum
+  goto L4
+L3:
+  print threshold
+L4:
+  done = true
+  print passed
