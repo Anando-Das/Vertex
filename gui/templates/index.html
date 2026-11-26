@@ -1,0 +1,1571 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vertex</title>
+  <style>
+    :root {
+      --bg-root: #1e1e1e;
+      --bg-panel: #252526;
+      --bg-header: #2d2d30;
+      --bg-elevated: #333337;
+      --bg-input: #1b1b1c;
+      --border: #3c3c3c;
+      --border-subtle: #2e2e32;
+      --text-primary: #d4d4d4;
+      --text-muted: #858585;
+      --text-bright: #ffffff;
+      --accent: #007acc;
+      --accent-hover: #1a8cd8;
+      --green: #4ec9b0;
+      --green-bg: rgba(78, 201, 176, 0.14);
+      --green-border: rgba(78, 201, 176, 0.45);
+      --red: #f48771;
+      --red-bg: rgba(244, 135, 113, 0.14);
+      --red-border: rgba(244, 135, 113, 0.45);
+      --yellow: #dcdcaa;
+      --orange: #ce9178;
+      --blue: #569cd6;
+      --cyan: #9cdcfe;
+      --purple: #c586c0;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, sans-serif;
+      --font-mono: "JetBrains Mono", "Fira Code", "Cascadia Code", Consolas, "Courier New", monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      height: 100%;
+      background: var(--bg-root);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      font-size: 13px;
+      overflow: hidden;
+    }
+
+    .app-shell {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    /* Top IDE Title Bar */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 44px;
+      padding: 0 16px;
+      background: var(--bg-header);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+      gap: 12px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--text-bright);
+      letter-spacing: 0.2px;
+    }
+
+    .brand-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 5px;
+      background: linear-gradient(135deg, #007acc, #4ec9b0);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .pipeline-steps {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .phase-pill {
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: var(--bg-root);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      transition: all 0.2s ease;
+    }
+
+    .phase-pill.passed {
+      color: var(--green);
+      border-color: var(--green-border);
+      background: var(--green-bg);
+    }
+
+    .phase-pill.failed {
+      color: var(--red);
+      border-color: var(--red-border);
+      background: var(--red-bg);
+    }
+
+    .shortcut-hint {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .shortcut-hint kbd {
+      background: var(--bg-root);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 1px 5px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-primary);
+    }
+
+    /* Main Split Workbench */
+    .workbench {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .pane {
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      min-width: 0;
+    }
+
+    .pane-left {
+      border-right: 1px solid var(--border);
+      background: var(--bg-root);
+    }
+
+    .pane-right {
+      background: var(--bg-panel);
+    }
+
+    /* Panel Toolbars */
+    .toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 8px 12px;
+      background: var(--bg-panel);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+      flex-wrap: wrap;
+    }
+
+    .toolbar-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .lang-select {
+      background: #1b2a38;
+      color: var(--cyan);
+      border: 1px solid rgba(0, 122, 204, 0.7);
+      border-radius: 4px;
+      padding: 5px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      font-family: var(--font-sans);
+      outline: none;
+      cursor: pointer;
+    }
+
+    .lang-select:focus {
+      border-color: var(--accent-hover);
+    }
+
+    .sample-select {
+      background: var(--bg-elevated);
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 5px 10px;
+      font-size: 12px;
+      font-family: var(--font-sans);
+      min-width: 190px;
+      max-width: 260px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .sample-select:focus {
+      border-color: var(--accent);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      background: var(--bg-elevated);
+      color: var(--text-primary);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.15s ease, border-color 0.15s ease, transform 0.05s ease;
+    }
+
+    .btn:hover {
+      background: #3e3e42;
+      border-color: #555;
+    }
+
+    .btn:active {
+      transform: translateY(1px);
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-hover);
+      border-color: var(--accent-hover);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.65;
+      cursor: wait;
+    }
+
+    .btn-ghost {
+      padding: 4px 9px;
+      font-size: 11px;
+      background: transparent;
+      border-color: var(--border);
+    }
+
+    /* Code Editor with Line Numbers */
+    .editor-container {
+      display: flex;
+      flex: 1;
+      min-height: 0;
+      position: relative;
+      background: var(--bg-root);
+    }
+
+    .gutter {
+      width: 50px;
+      padding: 12px 0;
+      background: #1e1e1e;
+      border-right: 1px solid var(--border-subtle);
+      color: #6e7681;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      line-height: 1.55;
+      text-align: right;
+      user-select: none;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .gutter-line {
+      padding: 0 10px 0 4px;
+      height: 20.15px;
+    }
+
+    .gutter-line.has-error {
+      background: rgba(244, 135, 113, 0.22);
+      color: var(--red);
+      font-weight: 700;
+    }
+
+    .code-input {
+      flex: 1;
+      width: 100%;
+      height: 100%;
+      padding: 12px 14px;
+      background: transparent;
+      color: var(--text-primary);
+      border: none;
+      outline: none;
+      resize: none;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      line-height: 1.55;
+      tab-size: 4;
+      white-space: pre;
+      overflow: auto;
+      caret-color: #aeafad;
+    }
+
+    /* Editor Bottom Status Bar */
+    .statusbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 24px;
+      padding: 0 12px;
+      background: var(--accent);
+      color: #fff;
+      font-size: 11px;
+      flex-shrink: 0;
+    }
+
+    .statusbar.error-mode {
+      background: #9a2f26;
+    }
+
+    .statusbar-group {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    /* Right Panel Header & Tabs */
+    .output-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      background: var(--bg-panel);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+      gap: 10px;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      border: 1px solid var(--border);
+      background: var(--bg-elevated);
+      color: var(--text-muted);
+    }
+
+    .status-badge .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--text-muted);
+    }
+
+    .status-badge.success {
+      background: var(--green-bg);
+      border-color: var(--green-border);
+      color: var(--green);
+    }
+
+    .status-badge.success .dot {
+      background: var(--green);
+      box-shadow: 0 0 8px var(--green);
+    }
+
+    .status-badge.error {
+      background: var(--red-bg);
+      border-color: var(--red-border);
+      color: var(--red);
+    }
+
+    .status-badge.error .dot {
+      background: var(--red);
+      box-shadow: 0 0 8px var(--red);
+    }
+
+    .meta-time {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .tabs-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #252526;
+      border-bottom: 1px solid var(--border);
+      padding-right: 10px;
+      flex-shrink: 0;
+    }
+
+    .tabs-list {
+      display: flex;
+      align-items: stretch;
+      overflow-x: auto;
+    }
+
+    .tab-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 9px 15px;
+      background: transparent;
+      border: none;
+      border-top: 2px solid transparent;
+      border-right: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: color 0.15s ease, background 0.15s ease;
+    }
+
+    .tab-btn.hidden {
+      display: none;
+    }
+
+    .tab-btn:hover {
+      color: var(--text-primary);
+      background: #2a2d2e;
+    }
+
+    .tab-btn.active {
+      color: var(--text-bright);
+      background: var(--bg-root);
+      border-top-color: var(--accent);
+    }
+
+    .tab-count {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 18px;
+      height: 16px;
+      padding: 0 5px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 700;
+      background: var(--red);
+      color: #1e1e1e;
+    }
+
+    .tab-count.hidden {
+      display: none;
+    }
+
+    /* Output Viewport */
+    .tab-panels {
+      flex: 1;
+      min-height: 0;
+      background: var(--bg-root);
+      overflow: auto;
+      padding: 14px 16px;
+    }
+
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    .code-view {
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      line-height: 1.6;
+      white-space: pre;
+      overflow-x: auto;
+    }
+
+    /* Runtime Output Cards for C++ / Java */
+    .stream-card {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--bg-panel);
+      overflow: hidden;
+      margin-bottom: 14px;
+    }
+
+    .stream-card.stderr-card {
+      border-color: var(--red-border);
+    }
+
+    .stream-card.warn-card {
+      border-color: rgba(220, 220, 170, 0.4);
+    }
+
+    .stream-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 7px 12px;
+      background: var(--bg-header);
+      border-bottom: 1px solid var(--border);
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--green);
+    }
+
+    .stream-card.stderr-card .stream-title {
+      color: var(--red);
+    }
+
+    .stream-card.warn-card .stream-title {
+      color: var(--yellow);
+    }
+
+    .stream-body {
+      padding: 12px 14px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-break: break-word;
+      color: var(--text-bright);
+    }
+
+    /* AST Syntax Coloring */
+    .ast-node {
+      color: var(--green);
+      font-weight: 600;
+    }
+
+    .ast-type {
+      color: var(--blue);
+    }
+
+    .ast-op {
+      color: var(--yellow);
+      font-weight: 600;
+    }
+
+    .ast-lit {
+      color: var(--orange);
+    }
+
+    .ast-line {
+      color: var(--text-muted);
+      font-size: 11.5px;
+    }
+
+    .ast-label {
+      color: var(--purple);
+    }
+
+    /* TAC Syntax Coloring */
+    .tac-row {
+      display: flex;
+      gap: 14px;
+      padding: 1px 4px;
+      border-radius: 3px;
+    }
+
+    .tac-row:hover {
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .tac-ln {
+      width: 30px;
+      text-align: right;
+      color: #555;
+      user-select: none;
+      flex-shrink: 0;
+    }
+
+    .tac-lbl {
+      color: var(--yellow);
+      font-weight: 700;
+    }
+
+    .tac-kw {
+      color: var(--purple);
+      font-weight: 600;
+    }
+
+    .tac-tmp {
+      color: var(--cyan);
+    }
+
+    .tac-op {
+      color: var(--green);
+    }
+
+    /* Symbol Table Card inside AST tab */
+    .symtab-card {
+      margin-top: 18px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--bg-panel);
+      overflow: hidden;
+    }
+
+    .symtab-title {
+      padding: 8px 12px;
+      background: var(--bg-header);
+      border-bottom: 1px solid var(--border);
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--cyan);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+
+    .symtab-body {
+      padding: 10px 12px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      line-height: 1.55;
+      white-space: pre;
+      overflow-x: auto;
+      color: var(--text-primary);
+    }
+
+    /* Errors View */
+    .error-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .error-card {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 11px 13px;
+      border-radius: 6px;
+      background: var(--bg-panel);
+      border: 1px solid var(--red-border);
+      border-left: 4px solid var(--red);
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+
+    .error-card:hover {
+      background: #2c2424;
+    }
+
+    .error-card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .error-kind {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: var(--red-bg);
+      color: var(--red);
+    }
+
+    .error-kind.lexical {
+      background: rgba(206, 145, 120, 0.18);
+      color: var(--orange);
+    }
+
+    .error-kind.syntax {
+      background: rgba(220, 220, 170, 0.16);
+      color: var(--yellow);
+    }
+
+    .error-kind.toolchain {
+      background: rgba(197, 134, 192, 0.18);
+      color: var(--purple);
+    }
+
+    .error-line-pill {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--cyan);
+      background: rgba(156, 220, 254, 0.1);
+      padding: 2px 7px;
+      border-radius: 4px;
+    }
+
+    .error-msg {
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      color: var(--text-bright);
+      line-height: 1.5;
+      white-space: pre-wrap;
+    }
+
+    .error-summary-box {
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-radius: 6px;
+      background: rgba(244, 135, 113, 0.08);
+      border: 1px solid var(--border);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-muted);
+      white-space: pre-wrap;
+    }
+
+    .ok-banner {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 16px;
+      border-radius: 6px;
+      background: var(--green-bg);
+      border: 1px solid var(--green-border);
+      color: var(--green);
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .empty-state {
+      color: var(--text-muted);
+      font-style: italic;
+      padding: 24px 8px;
+      text-align: center;
+    }
+
+    @media (max-width: 900px) {
+      .workbench {
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr 1fr;
+      }
+
+      .pane-left {
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .pipeline-steps,
+      .shortcut-hint {
+        display: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app-shell">
+    <!-- Top Header -->
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-icon">&lt;/&gt;</span>
+        <span>Vertex</span>
+      </div>
+
+      <div class="pipeline-steps" id="pipelineSteps"></div>
+
+      <div class="shortcut-hint">
+        Compile: <kbd>Ctrl</kbd> + <kbd>Enter</kbd>
+      </div>
+    </header>
+
+    <!-- Main Split IDE -->
+    <main class="workbench">
+      <!-- Left Panel: Code Editor -->
+      <section class="pane pane-left">
+        <div class="toolbar">
+          <div class="toolbar-group">
+            <select id="languageSelect" class="lang-select" title="Select language mode">
+              <option value="vertex">Vertex (.mc)</option>
+              <option value="cpp">C++ (.cpp)</option>
+              <option value="java">Java (.java)</option>
+            </select>
+            <select id="sampleSelect" class="sample-select" title="Load a sample or test file">
+              <option value="">Loading samples...</option>
+            </select>
+          </div>
+          <div class="toolbar-group">
+            <button id="clearBtn" class="btn" type="button" title="Clear editor">Clear</button>
+            <button id="compileBtn" class="btn btn-primary" type="button">
+              <span>&#9654;</span>
+              <span id="compileBtnText">Compile &amp; Run</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="editor-container">
+          <div id="gutter" class="gutter" aria-hidden="true"></div>
+          <textarea id="codeEditor" class="code-input" spellcheck="false" autocomplete="off" autocorrect="off"
+            autocapitalize="off" placeholder="// Write Vertex code here or choose a sample above..."></textarea>
+        </div>
+      </section>
+
+      <!-- Right Panel: Output Tabs -->
+      <section class="pane pane-right">
+        <div class="output-header">
+          <div id="statusBadge" class="status-badge">
+            <span class="dot"></span>
+            <span id="statusText">Ready to compile</span>
+          </div>
+          <span id="elapsedMeta" class="meta-time"></span>
+        </div>
+
+        <div class="tabs-bar">
+          <div class="tabs-list" role="tablist">
+            <button class="tab-btn active" data-tab="ast" role="tab">AST</button>
+            <button class="tab-btn" data-tab="tac" role="tab">Three Address Code (TAC)</button>
+            <button class="tab-btn hidden" data-tab="output" role="tab">Output</button>
+            <button class="tab-btn" data-tab="errors" role="tab">
+              Errors <span id="errorCountPill" class="tab-count hidden">0</span>
+            </button>
+            <button class="tab-btn" data-tab="raw" role="tab">Raw Output</button>
+          </div>
+          <button id="copyBtn" class="btn btn-ghost" type="button" title="Copy active tab output">Copy</button>
+        </div>
+
+        <div class="tab-panels">
+          <div id="panel-ast" class="tab-panel active">
+            <div class="empty-state">Click <strong>Compile &amp; Run</strong> to inspect the Abstract Syntax Tree.</div>
+          </div>
+          <div id="panel-tac" class="tab-panel">
+            <div class="empty-state">Three Address Code will appear here after successful compilation.</div>
+          </div>
+          <div id="panel-output" class="tab-panel">
+            <div class="empty-state">Program stdout/stderr will appear here after compilation and execution.</div>
+          </div>
+          <div id="panel-errors" class="tab-panel">
+            <div class="empty-state">No compilation has been run yet.</div>
+          </div>
+          <div id="panel-raw" class="tab-panel">
+            <div class="empty-state">Raw compiler stdout/stderr output will appear here.</div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Bottom Status Bar -->
+    <footer id="statusBar" class="statusbar">
+      <div class="statusbar-group">
+        <span id="activeFileLabel">editor.mc</span>
+        <span id="activeLangLabel">Vertex (.mc)</span>
+      </div>
+      <div class="statusbar-group">
+        <span id="cursorPos">Ln 1, Col 1</span>
+        <span id="lineCount">1 line</span>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    const codeEditor = document.getElementById("codeEditor");
+    const gutter = document.getElementById("gutter");
+    const languageSelect = document.getElementById("languageSelect");
+    const sampleSelect = document.getElementById("sampleSelect");
+    const clearBtn = document.getElementById("clearBtn");
+    const compileBtn = document.getElementById("compileBtn");
+    const compileBtnText = document.getElementById("compileBtnText");
+    const copyBtn = document.getElementById("copyBtn");
+    const statusBadge = document.getElementById("statusBadge");
+    const statusText = document.getElementById("statusText");
+    const elapsedMeta = document.getElementById("elapsedMeta");
+    const errorCountPill = document.getElementById("errorCountPill");
+    const statusBar = document.getElementById("statusBar");
+    const activeFileLabel = document.getElementById("activeFileLabel");
+    const activeLangLabel = document.getElementById("activeLangLabel");
+    const cursorPos = document.getElementById("cursorPos");
+    const lineCountEl = document.getElementById("lineCount");
+    const pipelineSteps = document.getElementById("pipelineSteps");
+
+    const tabButtons = document.querySelectorAll(".tab-btn");
+    const tabPanels = {
+      ast: document.getElementById("panel-ast"),
+      tac: document.getElementById("panel-tac"),
+      output: document.getElementById("panel-output"),
+      errors: document.getElementById("panel-errors"),
+      raw: document.getElementById("panel-raw"),
+    };
+
+    const BUILTIN_TEMPLATES = {
+      cpp: [
+        {
+          id: "cpp_hello",
+          label: "main.cpp — Hello & Sum Loop",
+          filename: "main.cpp",
+          code: `#include <iostream>\nusing namespace std;\n\nint main() {\n    int n = 5;\n    int sum = 0;\n    for (int i = 1; i <= n; ++i) {\n        sum += i * 2;\n    }\n    cout << "Hello from C++!" << endl;\n    cout << "Sum = " << sum << endl;\n    return 0;\n}\n`,
+        },
+        {
+          id: "cpp_error",
+          label: "main.cpp — Syntax Error Demo",
+          filename: "main.cpp",
+          code: `#include <iostream>\nusing namespace std;\n\nint main() {\n    int x = 10\n    cout << undeclared_var << endl;\n    return 0;\n}\n`,
+        },
+      ],
+      java: [
+        {
+          id: "java_hello",
+          label: "Main.java — Hello & Sum Loop",
+          filename: "Main.java",
+          code: `public class Main {\n    public static void main(String[] args) {\n        int n = 5;\n        int sum = 0;\n        for (int i = 1; i <= n; i++) {\n            sum += i * 2;\n        }\n        System.out.println("Hello from Java!");\n        System.out.println("Sum = " + sum);\n    }\n}\n`,
+        },
+        {
+          id: "java_error",
+          label: "Main.java — Compile Error Demo",
+          filename: "Main.java",
+          code: `public class Main {\n    public static void main(String[] args) {\n        int x = "not an int";\n        System.out.println(x);\n    }\n}\n`,
+        },
+      ],
+    };
+
+    const LANG_CONFIG = {
+      vertex: {
+        label: "Vertex (.mc)",
+        defaultFile: "editor.mc",
+        placeholder: "// Write Vertex (.mc) code here or choose a sample above...",
+        phases: [
+          { key: "lexer", label: "Lexer" },
+          { key: "parser", label: "Parser" },
+          { key: "ast", label: "AST" },
+          { key: "semantic", label: "Semantic" },
+          { key: "tac", label: "TAC" },
+        ],
+        visibleTabs: ["ast", "tac", "errors", "raw"],
+        defaultTab: "ast",
+      },
+      cpp: {
+        label: "C++17 (g++)",
+        defaultFile: "main.cpp",
+        placeholder: "// Write C++ code here...",
+        phases: [
+          { key: "source", label: "main.cpp" },
+          { key: "compile", label: "g++ Compile" },
+          { key: "run", label: "Run (5s)" },
+        ],
+        visibleTabs: ["output", "errors", "raw"],
+        defaultTab: "output",
+      },
+      java: {
+        label: "Java (javac / java)",
+        defaultFile: "Main.java",
+        placeholder: "// Write Java code with 'public class Main' here...",
+        phases: [
+          { key: "source", label: "Main.java" },
+          { key: "compile", label: "javac Compile" },
+          { key: "run", label: "java Main (5s)" },
+        ],
+        visibleTabs: ["output", "errors", "raw"],
+        defaultTab: "output",
+      },
+    };
+
+    let vertexSamples = [];
+    let vertexSamplesMap = new Map();
+    let currentLang = "vertex";
+    let drafts = {
+      vertex: { code: "", filename: "editor.mc", sampleValue: "" },
+      cpp: {
+        code: BUILTIN_TEMPLATES.cpp[0].code,
+        filename: "main.cpp",
+        sampleValue: "cpp_hello",
+      },
+      java: {
+        code: BUILTIN_TEMPLATES.java[0].code,
+        filename: "Main.java",
+        sampleValue: "java_hello",
+      },
+    };
+    let activeFilename = "editor.mc";
+    let activeTab = "ast";
+    let errorLines = new Set();
+    let lastResult = null;
+
+    function escapeHtml(str) {
+      return str
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function renderPipelinePills(lang) {
+      const cfg = LANG_CONFIG[lang];
+      pipelineSteps.innerHTML = cfg.phases
+        .map(
+          (p, i) =>
+            `${i > 0 ? "<span>&rarr;</span>" : ""}<span class="phase-pill" data-phase="${p.key}">${p.label}</span>`
+        )
+        .join("");
+    }
+
+    function populateSampleDropdown(lang) {
+      sampleSelect.innerHTML = "";
+      if (lang === "vertex") {
+        sampleSelect.innerHTML = `<option value="">-- Load Vertex Sample / Test --</option>`;
+        const grouped = new Map();
+        vertexSamples.forEach((s) => {
+          if (!grouped.has(s.category)) grouped.set(s.category, []);
+          grouped.get(s.category).push(s);
+        });
+        for (const [category, items] of grouped.entries()) {
+          const groupEl = document.createElement("optgroup");
+          groupEl.label = category;
+          items.forEach((item) => {
+            const opt = document.createElement("option");
+            opt.value = item.path;
+            opt.textContent = item.path;
+            groupEl.appendChild(opt);
+          });
+          sampleSelect.appendChild(groupEl);
+        }
+      } else {
+        const label = lang === "cpp" ? "C++ Templates" : "Java Templates";
+        sampleSelect.innerHTML = `<option value="">-- Load ${label} --</option>`;
+        const groupEl = document.createElement("optgroup");
+        groupEl.label = label;
+        (BUILTIN_TEMPLATES[lang] || []).forEach((tpl) => {
+          const opt = document.createElement("option");
+          opt.value = tpl.id;
+          opt.textContent = tpl.label;
+          groupEl.appendChild(opt);
+        });
+        sampleSelect.appendChild(groupEl);
+      }
+      sampleSelect.value = drafts[lang].sampleValue || "";
+    }
+
+    function configureTabsForLanguage(lang) {
+      const cfg = LANG_CONFIG[lang];
+      tabButtons.forEach((btn) => {
+        const visible = cfg.visibleTabs.includes(btn.dataset.tab);
+        btn.classList.toggle("hidden", !visible);
+      });
+      if (!cfg.visibleTabs.includes(activeTab)) {
+        switchTab(cfg.defaultTab);
+      }
+    }
+
+    function resetOutputArea(lang) {
+      lastResult = null;
+      errorLines.clear();
+      updateGutter();
+      renderPipelinePills(lang);
+      statusBadge.className = "status-badge";
+      statusText.textContent = "Ready to compile";
+      elapsedMeta.textContent = "";
+      statusBar.classList.remove("error-mode");
+      errorCountPill.classList.add("hidden");
+
+      tabPanels.ast.innerHTML = `<div class="empty-state">Click <strong>Compile &amp; Run</strong> to inspect the Abstract Syntax Tree.</div>`;
+      tabPanels.tac.innerHTML = `<div class="empty-state">Three Address Code will appear here after successful compilation.</div>`;
+      tabPanels.output.innerHTML = `<div class="empty-state">Click <strong>Compile &amp; Run</strong> to compile and execute your ${lang === "cpp" ? "C++" : "Java"} code.</div>`;
+      tabPanels.errors.innerHTML = `<div class="empty-state">No compilation has been run yet.</div>`;
+      tabPanels.raw.innerHTML = `<div class="empty-state">Raw compiler stdout/stderr output will appear here.</div>`;
+    }
+
+    function switchLanguage(newLang) {
+      // Save current editor state before switching
+      drafts[currentLang] = {
+        code: codeEditor.value,
+        filename: activeFilename,
+        sampleValue: sampleSelect.value,
+      };
+
+      currentLang = newLang;
+      const cfg = LANG_CONFIG[newLang];
+      const draft = drafts[newLang];
+
+      codeEditor.value = draft.code;
+      codeEditor.placeholder = cfg.placeholder;
+      activeFilename = draft.filename || cfg.defaultFile;
+      activeFileLabel.textContent = activeFilename;
+      activeLangLabel.textContent = cfg.label;
+
+      populateSampleDropdown(newLang);
+      configureTabsForLanguage(newLang);
+      switchTab(cfg.defaultTab);
+      resetOutputArea(newLang);
+      updateGutter();
+      updateCursorPos();
+    }
+
+    /* Line numbers gutter + cursor tracking */
+    function updateGutter() {
+      const lines = codeEditor.value.split("\n").length;
+      let html = "";
+      for (let i = 1; i <= lines; i++) {
+        const errClass = errorLines.has(i) ? " has-error" : "";
+        html += `<div class="gutter-line${errClass}">${i}</div>`;
+      }
+      gutter.innerHTML = html;
+      lineCountEl.textContent = `${lines} ${lines === 1 ? "line" : "lines"}`;
+    }
+
+    function updateCursorPos() {
+      const pos = codeEditor.selectionStart;
+      const before = codeEditor.value.slice(0, pos);
+      const lines = before.split("\n");
+      const ln = lines.length;
+      const col = lines[lines.length - 1].length + 1;
+      cursorPos.textContent = `Ln ${ln}, Col ${col}`;
+    }
+
+    function jumpToLine(lineNumber) {
+      if (!lineNumber || lineNumber < 1) return;
+      const lines = codeEditor.value.split("\n");
+      const target = Math.min(lineNumber, lines.length);
+      let offset = 0;
+      for (let i = 0; i < target - 1; i++) {
+        offset += lines[i].length + 1;
+      }
+      codeEditor.focus();
+      codeEditor.setSelectionRange(offset, offset + lines[target - 1].length);
+      const approxLineHeight = 20.15;
+      codeEditor.scrollTop = Math.max(0, (target - 4) * approxLineHeight);
+      gutter.scrollTop = codeEditor.scrollTop;
+      updateCursorPos();
+    }
+
+    codeEditor.addEventListener("input", () => {
+      if (errorLines.size > 0) {
+        errorLines.clear();
+      }
+      updateGutter();
+      updateCursorPos();
+    });
+
+    codeEditor.addEventListener("scroll", () => {
+      gutter.scrollTop = codeEditor.scrollTop;
+    });
+
+    codeEditor.addEventListener("click", updateCursorPos);
+    codeEditor.addEventListener("keyup", updateCursorPos);
+
+    codeEditor.addEventListener("keydown", (e) => {
+      if (e.key === "Tab") {
+        e.preventDefault();
+        const start = codeEditor.selectionStart;
+        const end = codeEditor.selectionEnd;
+        const val = codeEditor.value;
+        codeEditor.value = val.substring(0, start) + "    " + val.substring(end);
+        codeEditor.selectionStart = codeEditor.selectionEnd = start + 4;
+        updateGutter();
+        updateCursorPos();
+      } else if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+        e.preventDefault();
+        runCompile();
+      }
+    });
+
+    /* Tab switching */
+    function switchTab(tabName) {
+      activeTab = tabName;
+      tabButtons.forEach((btn) => {
+        btn.classList.toggle("active", btn.dataset.tab === tabName);
+      });
+      Object.entries(tabPanels).forEach(([key, panel]) => {
+        panel.classList.toggle("active", key === tabName);
+      });
+    }
+
+    tabButtons.forEach((btn) => {
+      btn.addEventListener("click", () => switchTab(btn.dataset.tab));
+    });
+
+    /* Pipeline pills */
+    function updatePipeline(res) {
+      const pills = document.querySelectorAll("#pipelineSteps .phase-pill");
+      pills.forEach((p) => p.classList.remove("passed", "failed"));
+      if (!res) return;
+
+      const setPhase = (name, state) => {
+        const el = document.querySelector(`#pipelineSteps .phase-pill[data-phase="${name}"]`);
+        if (el && state) el.classList.add(state);
+      };
+
+      if (res.success) {
+        pills.forEach((p) => p.classList.add("passed"));
+        return;
+      }
+
+      if ((res.language || currentLang) === "vertex") {
+        const kinds = new Set((res.errors || []).map((e) => e.kind));
+        const hasLex = kinds.has("Lexical Error");
+        const hasSyn = kinds.has("Syntax Error");
+        const hasSem = kinds.has("Semantic Error");
+
+        if (hasLex) {
+          setPhase("lexer", "failed");
+          if (hasSyn) setPhase("parser", "failed");
+        } else if (hasSyn) {
+          setPhase("lexer", "passed");
+          setPhase("parser", "failed");
+        } else if (hasSem) {
+          setPhase("lexer", "passed");
+          setPhase("parser", "passed");
+          setPhase("ast", "passed");
+          setPhase("semantic", "failed");
+        }
+      } else {
+        setPhase("source", "passed");
+        if (res.stage === "compile" || res.stage === "toolchain") {
+          setPhase("compile", "failed");
+        } else if (res.stage === "run") {
+          setPhase("compile", "passed");
+          setPhase("run", "failed");
+        }
+      }
+    }
+
+    /* Syntax-highlight AST output */
+    function formatAstHtml(astText) {
+      return astText
+        .split("\n")
+        .map((line) => {
+          let html = escapeHtml(line);
+          html = html.replace(
+            /^(\s*)(Program|Block|VarDecl|Assign|IfElse|If|While|Print|BinaryOp|UnaryOp|IntLiteral|FloatLiteral|BoolLiteral|Identifier)\b/,
+            '$1<span class="ast-node">$2</span>'
+          );
+          html = html.replace(
+            /^(\s*)(Condition:|Then:|Else:|Body:|Init:)/,
+            '$1<span class="ast-label">$2</span>'
+          );
+          html = html.replace(/\[(int|float|bool)\]/g, '<span class="ast-type">[$1]</span>');
+          html = html.replace(/type:\s*(int|float|bool)/g, 'type: <span class="ast-type">$1</span>');
+          html = html.replace(/&#39;([^&#]+)&#39;|'([^']+)'/g, (m) => `<span class="ast-op">${m}</span>`);
+          html = html.replace(/\(line \d+\)/g, '<span class="ast-line">$&</span>');
+          return html;
+        })
+        .join("\n");
+    }
+
+    /* Syntax-highlight TAC output */
+    function formatTacHtml(tacText) {
+      return tacText
+        .split("\n")
+        .map((line, idx) => {
+          let html = escapeHtml(line);
+          if (/^\s*L\d+:\s*$/.test(line)) {
+            html = `<span class="tac-lbl">${html}</span>`;
+          } else {
+            html = html.replace(/\b(ifFalse|goto|print)\b/g, '<span class="tac-kw">$1</span>');
+            html = html.replace(/\b(L\d+)\b/g, '<span class="tac-lbl">$1</span>');
+            html = html.replace(/\b(t\d+)\b/g, '<span class="tac-tmp">$1</span>');
+            html = html.replace(/(&lt;=|&gt;=|==|!=|&amp;&amp;|\|\||&lt;|&gt;|\+|-|\*|\/|%)/g, '<span class="tac-op">$1</span>');
+          }
+          return `<div class="tac-row"><span class="tac-ln">${idx + 1}</span><span>${html}</span></div>`;
+        })
+        .join("");
+    }
+
+    /* Render compilation results */
+    function renderResult(res) {
+      lastResult = res;
+      const lang = res.language || currentLang;
+      errorLines = new Set(
+        (res.errors || []).map((e) => e.line).filter((ln) => typeof ln === "number")
+      );
+      updateGutter();
+      updatePipeline(res);
+
+      elapsedMeta.textContent = `${res.elapsed_ms} ms`;
+
+      if (res.success) {
+        statusBadge.className = "status-badge success";
+        statusText.textContent =
+          lang === "vertex" ? "Compilation Succeeded" : "Compiled & Executed (Exit 0)";
+        statusBar.classList.remove("error-mode");
+        errorCountPill.classList.add("hidden");
+      } else {
+        const count = (res.errors || []).length;
+        statusBadge.className = "status-badge error";
+        statusText.textContent =
+          count > 0
+            ? `Failed (${count} ${count === 1 ? "error" : "errors"})`
+            : "Compilation Failed";
+        statusBar.classList.add("error-mode");
+        errorCountPill.textContent = String(count || "!");
+        errorCountPill.classList.remove("hidden");
+      }
+
+      if (lang === "vertex") {
+        /* AST Tab */
+        if (res.ast) {
+          let astHtml = `<div class="code-view">${formatAstHtml(res.ast)}</div>`;
+          if (res.symbol_table) {
+            astHtml += `
+              <div class="symtab-card">
+                <div class="symtab-title">Symbol Table</div>
+                <div class="symtab-body">${escapeHtml(res.symbol_table)}</div>
+              </div>`;
+          }
+          tabPanels.ast.innerHTML = astHtml;
+        } else {
+          tabPanels.ast.innerHTML = `<div class="empty-state">No AST available — fix compilation errors to view the AST.</div>`;
+        }
+
+        /* TAC Tab */
+        if (res.tac) {
+          tabPanels.tac.innerHTML = `<div class="code-view">${formatTacHtml(res.tac)}</div>`;
+        } else {
+          tabPanels.tac.innerHTML = `<div class="empty-state">Three Address Code generation was skipped because errors were detected.</div>`;
+        }
+      } else {
+        /* C++ / Java Program Output Tab */
+        let outHtml = "";
+        if (res.stdout) {
+          outHtml += `
+            <div class="stream-card">
+              <div class="stream-title">
+                <span>Standard Output (stdout)</span>
+                <span>Exit Code: ${res.exit_code}</span>
+              </div>
+              <div class="stream-body">${escapeHtml(res.stdout)}</div>
+            </div>`;
+        }
+        if (res.stderr) {
+          outHtml += `
+            <div class="stream-card stderr-card">
+              <div class="stream-title"><span>Standard Error (stderr)</span></div>
+              <div class="stream-body">${escapeHtml(res.stderr)}</div>
+            </div>`;
+        }
+        if (res.warnings) {
+          outHtml += `
+            <div class="stream-card warn-card">
+              <div class="stream-title"><span>Compiler Warnings</span></div>
+              <div class="stream-body">${escapeHtml(res.warnings)}</div>
+            </div>`;
+        }
+        if (!outHtml) {
+          outHtml = res.success
+            ? `<div class="empty-state">Program exited cleanly (code 0) with no stdout/stderr output.</div>`
+            : `<div class="empty-state">No program output — check the <strong>Errors</strong> tab for details.</div>`;
+        }
+        tabPanels.output.innerHTML = outHtml;
+      }
+
+      /* Errors Tab */
+      if (res.success) {
+        const msg =
+          lang === "vertex"
+            ? `No lexical, syntax, or semantic errors detected. ${escapeHtml(res.semantic || "")}`
+            : `${lang === "cpp" ? "C++" : "Java"} compiled and ran with 0 errors (exit code 0).`;
+        tabPanels.errors.innerHTML = `
+          <div class="ok-banner">
+            <span>&#10004;</span>
+            <span>${msg}</span>
+          </div>`;
+      } else {
+        const cards = (res.errors || [])
+          .map((err) => {
+            const k = (err.kind || "").toLowerCase();
+            const kindCls = k.includes("lexical")
+              ? "lexical"
+              : k.includes("syntax")
+                ? "syntax"
+                : k.includes("toolchain")
+                  ? "toolchain"
+                  : "semantic";
+            const lineAttr = err.line ? `data-line="${err.line}"` : "";
+            const lineBadge = err.line
+              ? `<span class="error-line-pill">Line ${err.line}</span>`
+              : "";
+            return `
+              <div class="error-card" ${lineAttr} title="${err.line ? `Click to jump to line ${err.line}` : ""}">
+                <div class="error-card-top">
+                  <span class="error-kind ${kindCls}">${escapeHtml(err.kind || "Error")}</span>
+                  ${lineBadge}
+                </div>
+                <div class="error-msg">${escapeHtml(err.message)}</div>
+              </div>`;
+          })
+          .join("");
+
+        const summaryHtml = res.error_summary
+          ? `<div class="error-summary-box">${escapeHtml(res.error_summary)}</div>`
+          : "";
+
+        tabPanels.errors.innerHTML = `
+          <div class="error-list">${cards || `<div class="error-summary-box">${escapeHtml(res.error_text || "Unknown error")}</div>`}</div>
+          ${summaryHtml}`;
+
+        tabPanels.errors.querySelectorAll(".error-card[data-line]").forEach((card) => {
+          card.addEventListener("click", () => {
+            jumpToLine(parseInt(card.dataset.line, 10));
+          });
+        });
+      }
+
+      /* Raw Output Tab */
+      tabPanels.raw.innerHTML = res.raw_output
+        ? `<div class="code-view">${escapeHtml(res.raw_output)}</div>`
+        : `<div class="empty-state">(no output)</div>`;
+
+      /* Auto-focus appropriate tab */
+      if (!res.success) {
+        switchTab("errors");
+      } else if (lang !== "vertex") {
+        switchTab("output");
+      } else if (activeTab === "errors") {
+        switchTab("tac");
+      }
+    }
+
+    /* Call POST /compile */
+    async function runCompile() {
+      compileBtn.disabled = true;
+      compileBtnText.textContent = currentLang === "vertex" ? "Compiling..." : "Running...";
+      try {
+        const response = await fetch("/compile", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            language: currentLang,
+            code: codeEditor.value,
+            filename: activeFilename,
+          }),
+        });
+        const data = await response.json();
+        renderResult(data);
+      } catch (err) {
+        renderResult({
+          language: currentLang,
+          success: false,
+          stage: "toolchain",
+          errors: [
+            {
+              kind: "Network Error",
+              line: null,
+              message: `Could not reach backend server: ${err.message}`,
+            },
+          ],
+          error_summary: "Check that gui/app.py is running.",
+          raw_output: String(err),
+          elapsed_ms: 0,
+        });
+      } finally {
+        compileBtn.disabled = false;
+        compileBtnText.textContent = "Compile & Run";
+      }
+    }
+
+    /* Load Vertex samples from GET /samples */
+    async function loadSamples() {
+      try {
+        const res = await fetch("/samples");
+        const data = await res.json();
+        vertexSamples = data.samples || [];
+        vertexSamplesMap.clear();
+        vertexSamples.forEach((s) => vertexSamplesMap.set(s.path, s));
+
+        const defaultSample =
+          vertexSamplesMap.get("examples/valid_program.mc") || vertexSamples[0];
+        if (defaultSample) {
+          drafts.vertex = {
+            code: defaultSample.code,
+            filename: defaultSample.path,
+            sampleValue: defaultSample.path,
+          };
+          if (currentLang === "vertex") {
+            codeEditor.value = defaultSample.code;
+            activeFilename = defaultSample.path;
+            activeFileLabel.textContent = activeFilename;
+            populateSampleDropdown("vertex");
+            updateGutter();
+            updateCursorPos();
+          }
+        } else {
+          populateSampleDropdown(currentLang);
+        }
+      } catch (err) {
+        sampleSelect.innerHTML = `<option value="">Failed to load samples</option>`;
+      }
+    }
+
+    languageSelect.addEventListener("change", () => {
+      switchLanguage(languageSelect.value);
+    });
+
+    sampleSelect.addEventListener("change", () => {
+      const selectedValue = sampleSelect.value;
+      if (!selectedValue) return;
+
+      if (currentLang === "vertex") {
+        const sample = vertexSamplesMap.get(selectedValue);
+        if (sample) {
+          codeEditor.value = sample.code;
+          activeFilename = sample.path;
+          activeFileLabel.textContent = activeFilename;
+          errorLines.clear();
+          updateGutter();
+          updateCursorPos();
+        }
+      } else {
+        const tpl = (BUILTIN_TEMPLATES[currentLang] || []).find((t) => t.id === selectedValue);
+        if (tpl) {
+          codeEditor.value = tpl.code;
+          activeFilename = tpl.filename;
+          activeFileLabel.textContent = activeFilename;
+          errorLines.clear();
+          updateGutter();
+          updateCursorPos();
+        }
+      }
+    });
+
+    clearBtn.addEventListener("click", () => {
+      codeEditor.value = "";
+      sampleSelect.value = "";
+      activeFilename = LANG_CONFIG[currentLang].defaultFile;
+      activeFileLabel.textContent = activeFilename;
+      errorLines.clear();
+      updateGutter();
+      updateCursorPos();
+      codeEditor.focus();
+    });
+
+    compileBtn.addEventListener("click", runCompile);
+
+    copyBtn.addEventListener("click", async () => {
+      if (!lastResult) return;
+      let text = "";
+      if (activeTab === "ast") {
+        text = lastResult.ast + (lastResult.symbol_table ? "\n\n" + lastResult.symbol_table : "");
+      } else if (activeTab === "tac") {
+        text = lastResult.tac;
+      } else if (activeTab === "output") {
+        text = [lastResult.stdout, lastResult.stderr].filter(Boolean).join("\n");
+      } else if (activeTab === "errors") {
+        text = lastResult.error_text || lastResult.error_summary || lastResult.semantic || "";
+      } else {
+        text = lastResult.raw_output || "";
+      }
+      if (!text) return;
+      try {
+        await navigator.clipboard.writeText(text);
+        copyBtn.textContent = "Copied!";
+        setTimeout(() => (copyBtn.textContent = "Copy"), 1200);
+      } catch {
+        copyBtn.textContent = "Failed";
+        setTimeout(() => (copyBtn.textContent = "Copy"), 1200);
+      }
+    });
+
+    /* Init */
+    renderPipelinePills("vertex");
+    configureTabsForLanguage("vertex");
+    updateGutter();
+    loadSamples();
+  </script>
+</body>
+
+</html>
