@@ -1249,6 +1249,7 @@
 
     /* Syntax-highlight TAC output */
     function formatTacHtml(tacText) {
+      const tokenRe = /\b(ifFalse|goto|print)\b|\b(L\d+)\b|\b(t\d+)\b|(&lt;=|&gt;=|==|!=|&amp;&amp;|\|\||&lt;|&gt;|\+|-|\*|\/|%)/g;
       return tacText
         .split("\n")
         .map((line, idx) => {
@@ -1256,10 +1257,13 @@
           if (/^\s*L\d+:\s*$/.test(line)) {
             html = `<span class="tac-lbl">${html}</span>`;
           } else {
-            html = html.replace(/\b(ifFalse|goto|print)\b/g, '<span class="tac-kw">$1</span>');
-            html = html.replace(/\b(L\d+)\b/g, '<span class="tac-lbl">$1</span>');
-            html = html.replace(/\b(t\d+)\b/g, '<span class="tac-tmp">$1</span>');
-            html = html.replace(/(&lt;=|&gt;=|==|!=|&amp;&amp;|\|\||&lt;|&gt;|\+|-|\*|\/|%)/g, '<span class="tac-op">$1</span>');
+            html = html.replace(tokenRe, (match, kw, lbl, tmp, op) => {
+              if (kw) return `<span class="tac-kw">${kw}</span>`;
+              if (lbl) return `<span class="tac-lbl">${lbl}</span>`;
+              if (tmp) return `<span class="tac-tmp">${tmp}</span>`;
+              if (op) return `<span class="tac-op">${op}</span>`;
+              return match;
+            });
           }
           return `<div class="tac-row"><span class="tac-ln">${idx + 1}</span><span>${html}</span></div>`;
         })
