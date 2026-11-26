@@ -1,0 +1,22 @@
+# Generated Flex and Bison files
+lex.yy.c
+src/lexer/lex.yy.c
+*.tab.c
+*.tab.h
+src/parser/*.tab.c
+src/parser/*.tab.h
+*.output
+
+# Compiled object files and binaries
+*.o
+a.out
+*.exe
+compiler
+compiler.exe
+
+# Editor / OS artifacts
+.DS_Store
+Thumbs.db
+*.swp
+*~
+__pycache__/
